@@ -1,143 +1,305 @@
-package com.example.app_pasteleria_mil_sabores.ui.screen
+package com.example.ecommerce.ui.screens
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import com.example.app_pasteleria_mil_sabores.R
-import com.example.app_pasteleria_mil_sabores.data.model.Product
-import com.example.app_pasteleria_mil_sabores.viewmodel.ProductViewModel
-import kotlinx.coroutines.launch
+import com.example.ecommerce.data.database.entities.ProductEntity
+import com.example.ecommerce.ui.components.FormValidation
+import com.example.ecommerce.ui.viewmodels.ProductState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductEditScreen(navController: NavController, productId: Long) {
-    val viewModel: ProductViewModel = hiltViewModel()
-    var product by remember { mutableStateOf<Product?>(null) }
+fun EditProductScreen(
+    productState: ProductState,
+    productId: Int,
+    onUpdateProduct: (ProductEntity) -> Unit,
+    onDeleteProduct: (ProductEntity) -> Unit,
+    onLoadProduct: (Int) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var name by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("") }
+    var stock by remember { mutableStateOf("") }
+    var imageUrl by remember { mutableStateOf("") }
 
-    val imageMap = mapOf(
-        "tortachocolate" to R.drawable.tortachocolate,
-        "browniesingluten" to R.drawable.browniesingluten,
-        "cheesecakesinzucar" to R.drawable.cheesecakesinzucar,
-        "empanadamanzana" to R.drawable.empanadamanzana,
-        "galletasveganas" to R.drawable.galletasveganas,
-        "moussecocolate" to R.drawable.moussecocolate,
-        "pansingluten" to R.drawable.pansingluten,
-        "tartasantiago" to R.drawable.tartasantiago,
-        "tiramisu" to R.drawable.tiramisu,
-        "tortaboda" to R.drawable.tortaboda,
-        "tortachocolate" to R.drawable.tortachocolate,
-        "tortacumpleanos" to R.drawable.tortacumpleanos
-    )
-    val imageKeys = imageMap.keys.toList()
-    var selectedImageIndex by remember { mutableStateOf(0) }
+    var nameError by remember { mutableStateOf<String?>(null) }
+    var descriptionError by remember { mutableStateOf<String?>(null) }
+    var priceError by remember { mutableStateOf<String?>(null) }
+    var stockError by remember { mutableStateOf<String?>(null) }
+    var showErrors by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(productId) {
-        viewModel.viewModelScope.launch {
-            val found = viewModel.products.value.find { it.id == productId }
-            product = found
-            if (found != null) {
-                val key = imageMap.entries.find { it.value == found.imageResId }?.key
-                selectedImageIndex = imageKeys.indexOf(key ?: imageKeys[0])
-            }
+        onLoadProduct(productId)
+    }
+
+    LaunchedEffect(productState.currentProduct) {
+        productState.currentProduct?.let { product ->
+            name = product.name
+            description = product.description
+            price = product.price.toString()
+            stock = product.stock.toString()
+            imageUrl = product.imageUrl
         }
     }
 
-    var name by remember { mutableStateOf(product?.name ?: "") }
-    var price by remember { mutableStateOf("${product?.price ?: ""}") }
-    var description by remember { mutableStateOf(product?.description ?: "") }
-
-    LaunchedEffect(product) {
-        name = product?.name ?: ""
-        price = "${product?.price ?: ""}"
-        description = product?.description ?: ""
+    LaunchedEffect(productState.successMessage) {
+        if (productState.successMessage != null) {
+            kotlinx.coroutines.delay(1500)
+            onBack()
+        }
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Editar Producto") }) }) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Nombre") },
-                modifier = Modifier.fillMaxWidth()
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Eliminar Producto") },
+            text = { Text("¿Estás seguro de que deseas eliminar este producto?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        productState.currentProduct?.let { onDeleteProduct(it) }
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Eliminar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Editar Producto") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { showDeleteDialog = true }) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "Eliminar",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
+        ) {
+            AnimatedVisibility(
+                visible = productState.successMessage != null,
+                enter = slideInVertically() + fadeIn(),
+                exit = slideOutVertically() + fadeOut()
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = productState.successMessage ?: "",
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+            }
 
             OutlinedTextField(
-                value = price,
-                onValueChange = { price = it },
-                label = { Text("Precio (€)") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
+                value = name,
+                onValueChange = {
+                    name = it
+                    if (showErrors) {
+                        nameError = FormValidation.validateProductName(it)
+                    }
+                },
+                label = { Text("Nombre del producto") },
+                leadingIcon = {
+                    Icon(Icons.Default.ShoppingBag, contentDescription = null)
+                },
+                isError = nameError != null && showErrors,
+                supportingText = {
+                    if (nameError != null && showErrors) {
+                        Text(nameError!!)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = description,
-                onValueChange = { description = it },
+                onValueChange = {
+                    description = it
+                    if (showErrors) {
+                        descriptionError = FormValidation.validateDescription(it)
+                    }
+                },
                 label = { Text("Descripción") },
+                leadingIcon = {
+                    Icon(Icons.Default.Info, contentDescription = null)
+                },
+                isError = descriptionError != null && showErrors,
+                supportingText = {
+                    if (descriptionError != null && showErrors) {
+                        Text(descriptionError!!)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
-                maxLines = 3
+                minLines = 3,
+                maxLines = 5
             )
 
-            Text("Imagen:")
-            DropdownMenuSample(
-                items = imageKeys,
-                selectedIndex = selectedImageIndex,
-                onSelectionChange = { selectedImageIndex = it }
-            )
-
-            Image(
-                painter = painterResource(id = imageMap[imageKeys[selectedImageIndex]]!!),
-                contentDescription = "Preview",
-                modifier = Modifier
-                    .size(120.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Button(
-                    onClick = {
-                        if (name.isNotBlank() && price.isNotBlank() && description.isNotBlank()) {
-                            val updated = product?.copy(
-                                name = name,
-                                price = price.toDoubleOrNull() ?: 0.0,
-                                description = description,
-                                imageResId = imageMap[imageKeys[selectedImageIndex]]!!
-                            )
-                            if (updated != null) {
-                                viewModel.update(updated)
-                                navController.popBackStack()
-                            }
+                OutlinedTextField(
+                    value = price,
+                    onValueChange = {
+                        price = it
+                        if (showErrors) {
+                            priceError = FormValidation.validatePrice(it)
                         }
                     },
-                    enabled = name.isNotBlank() && price.isNotBlank() && description.isNotBlank()
-                ) {
-                    Text("Guardar")
-                }
+                    label = { Text("Precio") },
+                    leadingIcon = {
+                        Icon(Icons.Default.AccountBox, contentDescription = null)
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    isError = priceError != null && showErrors,
+                    supportingText = {
+                        if (priceError != null && showErrors) {
+                            Text(priceError!!)
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true
+                )
 
-                IconButton(onClick = {
-                    product?.let { p ->
-                        viewModel.delete(p)
-                        navController.popBackStack()
+                OutlinedTextField(
+                    value = stock,
+                    onValueChange = {
+                        stock = it
+                        if (showErrors) {
+                            stockError = FormValidation.validateStock(it)
+                        }
+                    },
+                    label = { Text("Stock") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    isError = stockError != null && showErrors,
+                    supportingText = {
+                        if (stockError != null && showErrors) {
+                            Text(stockError!!)
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = imageUrl,
+                onValueChange = { imageUrl = it },
+                label = { Text("URL de imagen (opcional)") },
+                leadingIcon = {
+                    Icon(Icons.Default.Search, contentDescription = null)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    showErrors = true
+                    nameError = FormValidation.validateProductName(name)
+                    descriptionError = FormValidation.validateDescription(description)
+                    priceError = FormValidation.validatePrice(price)
+                    stockError = FormValidation.validateStock(stock)
+
+                    if (nameError == null && descriptionError == null &&
+                        priceError == null && stockError == null) {
+                        productState.currentProduct?.let { product ->
+                            onUpdateProduct(
+                                product.copy(
+                                    name = name,
+                                    description = description,
+                                    price = price.toDouble(),
+                                    stock = stock.toInt(),
+                                    imageUrl = imageUrl
+                                )
+                            )
+                        }
                     }
-                }) {
-                    Icon(Icons.Default.Delete, contentDescription = "Eliminar")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                enabled = !productState.isLoading
+            ) {
+                if (productState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Icon(Icons.Default.Check, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Guardar Cambios")
                 }
             }
         }

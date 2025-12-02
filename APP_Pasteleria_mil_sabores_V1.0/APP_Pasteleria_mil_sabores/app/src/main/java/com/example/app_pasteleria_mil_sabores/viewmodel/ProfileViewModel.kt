@@ -11,27 +11,56 @@ import kotlinx.coroutines.launch
 
 data class ProfileUiState(
     val user: User? = null,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val error: String? = null
 )
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
+
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState
 
     private val userDao = AppDatabase.getDatabase(application).userDao()
 
     fun loadUser(email: String) {
-        _uiState.value = _uiState.value.copy(isLoading = true)
+        _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+
         viewModelScope.launch {
-            val user = userDao.getUser(email)
-            _uiState.value = ProfileUiState(user = user, isLoading = false)
+            try {
+                val user = userDao.getUser(email)
+
+                if (user == null) {
+                    _uiState.value = ProfileUiState(
+                        user = null,
+                        isLoading = false,
+                        error = "El usuario no existe"
+                    )
+                } else {
+                    _uiState.value = ProfileUiState(
+                        user = user,
+                        isLoading = false,
+                        error = null
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.value = ProfileUiState(
+                    user = null,
+                    isLoading = false,
+                    error = e.message
+                )
+            }
         }
     }
 
     fun updateUser(user: User) {
         viewModelScope.launch {
-            userDao.insert(user)
-            _uiState.value = _uiState.value.copy(user = user)
+            try {
+                userDao.update(user) // ← Cambiado a UPDATE (antes: insert)
+                _uiState.value = _uiState.value.copy(user = user)
+            } catch (e: Exception) {
+                _uiState.value =
+                    _uiState.value.copy(error = "Error al actualizar: ${e.message}")
+            }
         }
     }
 }

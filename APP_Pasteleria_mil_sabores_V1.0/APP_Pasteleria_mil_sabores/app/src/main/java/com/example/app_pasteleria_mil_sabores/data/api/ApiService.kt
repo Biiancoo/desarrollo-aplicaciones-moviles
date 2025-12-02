@@ -1,25 +1,58 @@
 package com.example.app_pasteleria_mil_sabores.data.api
 
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.*
 
-interface LoginRequest {
-    data class Body(val email: String, val password: String)
-    data class Response(val token: String)
-}
+import com.example.app_pasteleria_mil_sabores.data.api.models.ApiProduct
+import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
 
-interface ApiService {
-    @POST("/api/login")
-    suspend fun login(@Body body: LoginRequest.Body): LoginRequest.Response
+class ApiService {
+    private val gson = Gson()
+    private val baseUrl = "https://fakestoreapi.com"
 
-    companion object {
-        val instance: ApiService by lazy {
-            Retrofit.Builder()
-                .baseUrl("https://reqres.in")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ApiService::class.java)
+    suspend fun getProducts(): List<ApiProduct> = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("$baseUrl/products")
+            val connection = url.openConnection() as HttpURLConnection
+
+            connection.requestMethod = "GET"
+            connection.connectTimeout = 10000
+            connection.readTimeout = 10000
+
+            val responseCode = connection.responseCode
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                val response = connection.inputStream.bufferedReader().use { it.readText() }
+                gson.fromJson(response, Array<ApiProduct>::class.java).toList()
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    suspend fun getProductById(id: Int): ApiProduct? = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("$baseUrl/products/$id")
+            val connection = url.openConnection() as HttpURLConnection
+
+            connection.requestMethod = "GET"
+            connection.connectTimeout = 10000
+            connection.readTimeout = 10000
+
+            val responseCode = connection.responseCode
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                val response = connection.inputStream.bufferedReader().use { it.readText() }
+                gson.fromJson(response, ApiProduct::class.java)
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 }

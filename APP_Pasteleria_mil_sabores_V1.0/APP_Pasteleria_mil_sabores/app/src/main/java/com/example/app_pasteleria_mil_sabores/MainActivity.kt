@@ -1,29 +1,55 @@
-package com.example.app_pasteleria_mil_sabores
+package com.example.ecommerce
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import androidx.navigation.compose.rememberNavController
-import com.example.app_pasteleria_mil_sabores.navigation.NavGraph
-import com.example.app_pasteleria_mil_sabores.ui.theme.AppPasteleriaMilSaboresTheme
-import dagger.hilt.android.AndroidEntryPoint
+import com.example.ecommerce.data.api.ApiService
+import com.example.ecommerce.data.database.AppDatabase
+import com.example.ecommerce.data.repository.CartRepository
+import com.example.ecommerce.data.repository.ProductRepository
+import com.example.ecommerce.data.repository.UserRepository
+import com.example.ecommerce.navigation.Navigation
+import com.example.ecommerce.ui.viewmodels.AuthViewModel
+import com.example.ecommerce.ui.viewmodels.CartViewModel
+import com.example.ecommerce.ui.viewmodels.ProductViewModel
+import com.example.ecommerce.ui.viewmodels.ProfileViewModel
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private lateinit var database: AppDatabase
+    private lateinit var authViewModel: AuthViewModel
+    private lateinit var profileViewModel: ProfileViewModel
+    private lateinit var productViewModel: ProductViewModel
+    private lateinit var cartViewModel: CartViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize database
+        database = AppDatabase.getDatabase(applicationContext)
+
+        // Initialize repositories
+        val userRepository = UserRepository(database.userDao())
+        val apiService = ApiService()
+        val productRepository = ProductRepository(database.productDao(), apiService)
+        val cartRepository = CartRepository(database.cartDao())
+
+        // Initialize ViewModels
+        authViewModel = AuthViewModel(userRepository)
+        profileViewModel = ProfileViewModel(userRepository)
+        productViewModel = ProductViewModel(productRepository)
+        cartViewModel = CartViewModel(cartRepository)
+
         setContent {
-            AppPasteleriaMilSaboresTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val navController = rememberNavController()
-                    NavGraph(navController = navController)
+            MaterialTheme {
+                Surface {
+                    Navigation(
+                        authViewModel = authViewModel,
+                        profileViewModel = profileViewModel,
+                        productViewModel = productViewModel,
+                        cartViewModel = cartViewModel
+                    )
                 }
             }
         }

@@ -5,9 +5,15 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "products")
 data class Product(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+
     val name: String,
+
     val price: Double,
+
     val description: String,
-    val imageResId: Int
+
+    // Guarda nombre del recurso en vez del ID para evitar crashes al reinstalar la app
+    val imagePath: String = ""
 )
