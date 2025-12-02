@@ -49,32 +49,26 @@ fun Navigation(
     cartViewModel: CartViewModel,
     navController: NavHostController = rememberNavController()
 ) {
-    // 1. Obtener Estados de los ViewModels
     val authState by authViewModel.authState.collectAsState()
     val profileState by profileViewModel.uiState.collectAsState()
     val cartState by cartViewModel.cartState.collectAsState()
 
-    // Asumimos que productViewModel.products devuelve List<ProductEntity>
     val productsList by productViewModel.products.collectAsState(initial = emptyList())
 
-    // 2. Adaptador para ProductState (Corregido el casting)
-    // Asumimos que ProductState.products espera List<ProductEntity>
+
     val productState = remember(productsList, authState.userId) {
         ProductState(
             userId = authState.userId,
             currentProduct = null,
-            // 🚨 CORRECCIÓN 1: Se pasa la lista con el casting si es necesario, si no, se deja directo
             products = productsList as List<ProductEntity>
         )
     }
 
-    // 3. Efecto para Navegación Post-Login
     LaunchedEffect(authState.isLoggedIn) {
         if (authState.isLoggedIn) {
             navController.navigate(Screen.ProductList.route) {
                 popUpTo(Screen.Login.route) { inclusive = true }
             }
-            // Cargar datos del usuario y carrito (usando el ID del usuario logueado)
             profileViewModel.loadUser("")
             cartViewModel.loadCart(authState.userId)
         }
@@ -85,7 +79,6 @@ fun Navigation(
         navController = navController,
         startDestination = Screen.Login.route
     ) {
-        // --- LOGIN, REGISTER, ADD PRODUCT (Sin cambios mayores) ---
         composable(Screen.Login.route) {
             LoginScreen(
                 authState = authState,
@@ -107,7 +100,6 @@ fun Navigation(
             )
         }
 
-        // --- LISTA DE PRODUCTOS (HOME) ---
         composable(Screen.ProductList.route) {
             ProductListScreen(
                 productState = productState,
@@ -115,7 +107,6 @@ fun Navigation(
                 onAddProduct = { navController.navigate(Screen.AddProduct.route) },
                 onEditProduct = { productId -> navController.navigate(Screen.EditProduct.createRoute(productId)) },
 
-                // 🚨 CORRECCIÓN 2: Aseguramos que el producto sea del tipo que espera el CartViewModel
                 onAddToCart = { product ->
                     cartViewModel.addToCart(product as ProductEntity) // O Product, según lo que espera el VM
                 },
@@ -181,11 +172,9 @@ fun Navigation(
             )
         }
 
-        // --- CARRITO ---
         composable(Screen.Cart.route) {
             CartScreen(
                 cartState = cartState,
-                // 🚨 CORRECCIÓN 4: Se asume que item es del tipo esperado por el VM (e.g., CartItem)
                 onUpdateQuantity = { item, qty -> cartViewModel.updateQuantity(item, qty) },
                 onRemoveItem = { item -> cartViewModel.removeFromCart(item) },
                 onClearCart = { cartViewModel.clearCart(authState.userId) },

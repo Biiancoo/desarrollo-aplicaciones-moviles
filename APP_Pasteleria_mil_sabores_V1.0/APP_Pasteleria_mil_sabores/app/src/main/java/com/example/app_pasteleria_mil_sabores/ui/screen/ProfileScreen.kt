@@ -42,7 +42,6 @@ fun ProfileScreen(
             if (profileState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
-            // 2. Contenido del Usuario
             else {
                 profileState.user?.let { user ->
                     Column(

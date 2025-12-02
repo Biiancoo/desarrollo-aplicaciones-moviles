@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-// Asegúrate de que estos imports coincidan con tu estructura
 import com.example.app_pasteleria_mil_sabores.data.entities.ProductEntity
 import com.example.app_pasteleria_mil_sabores.viewmodel.ProductState
 
@@ -91,12 +90,12 @@ fun ProductListScreen(
             if (productState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else if (productState.products1.isEmpty()) { // CAMBIO: Usamos products1
-                // Estado Vacío
+
                 Column(
                     modifier = Modifier.align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // CORRECCIÓN: Usamos 'Info' en lugar de 'Cake'
+
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = null,
@@ -116,12 +115,11 @@ fun ProductListScreen(
                     )
                 }
             } else {
-                // Lista de Productos
+
                 LazyColumn(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // CORRECCIÓN: Nombramos la variable de iteración 'item' para evitar confusión con el plural 'products'
                     items(productState.products1) { item ->
                         ProductItem(
                             product = item,
@@ -197,8 +195,7 @@ fun ProductItem(
                         fontWeight = FontWeight.Bold
                     )
 
-                    // Lógica de STOCK eliminada ya que causaba error de referencia no resuelta.
-                    // Si agregas 'stock' a ProductEntity, puedes descomentar y usar esta lógica.
+
                     Text(
                         text = "Estado: Disponible",
                         style = MaterialTheme.typography.labelMedium,
@@ -206,12 +203,9 @@ fun ProductItem(
                     )
                 }
 
-                // Botón Agregar al Carrito
                 Button(
                     onClick = onAddToCartClick,
-                    // Se quitó la condición 'enabled = product.stock > 0'
                 ) {
-                    // CORRECCIÓN: Usamos el icono estándar ShoppingCart
                     Icon(
                         imageVector = Icons.Default.ShoppingCart, // Icono seguro
                         contentDescription = null,

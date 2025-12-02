@@ -178,9 +178,8 @@ fun AddProductScreen(
                     if (nameError == null && descriptionError == null &&
                         priceError == null && stockError == null) {
 
-                        // Los valores parsedPrice y parsedStock son definitivamente no nulos aquí
                         val product = ProductEntity(
-                            id = 0, // Se asume que la base de datos asignará el ID
+                            id = 0,
                             name = name,
                             description = description,
                             price = parsedPrice!!,

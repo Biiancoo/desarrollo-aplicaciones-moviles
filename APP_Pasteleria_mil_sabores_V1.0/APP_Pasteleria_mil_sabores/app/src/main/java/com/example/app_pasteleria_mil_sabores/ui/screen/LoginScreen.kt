@@ -89,10 +89,7 @@ fun LoginScreen(
                         Icons.Default
                     else Icons.Default
 
-                    // Si Visibility/VisibilityOff no existen, usa Info como fallback seguro
-                    // IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    //     Icon(imageVector = image, contentDescription = null)
-                    // }
+
                 },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),

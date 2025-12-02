@@ -14,7 +14,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.app_pasteleria_mil_sabores.viewmodel.AuthState
 import com.example.app_pasteleria_mil_sabores.viewmodel.AuthViewModel
 
 
@@ -24,17 +23,14 @@ fun RegisterScreen(navController: NavController) {
     val viewModel: AuthViewModel = viewModel()
     val uiState by viewModel.authState.collectAsState()
 
-    // Campos
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    // Validación simple
     val isValid = name.isNotBlank() &&
             email.isNotBlank() &&
             password.length >= 4
 
-    // Éxito → redirección segura
     LaunchedEffect(uiState.success) {
         if (uiState.success) {
             navController.navigate("login") {
