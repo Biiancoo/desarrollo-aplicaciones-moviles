@@ -5,8 +5,28 @@ import com.example.app_pasteleria_mil_sabores.data.model.Product
 import kotlinx.coroutines.flow.Flow
 
 class ProductRepository(private val productDao: ProductDao) {
-    fun getAllProducts(): Flow<List<Product>> = productDao.getAllProducts()
-    suspend fun insert(product: Product) = productDao.insert(product)
-    suspend fun update(product: Product) = productDao.update(product)
-    suspend fun delete(product: Product) = productDao.delete(product)
+
+    // Obtener productos en tiempo real
+    fun getAllProducts(): Flow<List<Product>> =
+        productDao.getAllProducts()
+
+    // Obtener 1 producto específico
+    suspend fun getById(id: Long): Product? =
+        productDao.getProductById(id)
+
+    // Insertar producto
+    suspend fun insert(product: Product): Long =
+        productDao.insert(product)
+
+    // Actualizar producto
+    suspend fun update(product: Product) =
+        productDao.update(product)
+
+    // Eliminar producto
+    suspend fun delete(product: Product) =
+        productDao.delete(product)
+
+    // Borrar todos los productos (útil en logout o pruebas)
+    suspend fun deleteAll() =
+        productDao.deleteAll()
 }

@@ -1,156 +1,283 @@
-package com.example.app_pasteleria_mil_sabores.ui.screen
+package com.example.ecommerce.ui.screens
 
-import androidx.compose.foundation.Image
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import com.example.app_pasteleria_mil_sabores.R
-import com.example.app_pasteleria_mil_sabores.data.model.Product
-import com.example.app_pasteleria_mil_sabores.viewmodel.ProductViewModel
+import com.example.ecommerce.data.database.entities.ProductEntity
+import com.example.ecommerce.ui.components.FormValidation
+import com.example.ecommerce.ui.viewmodels.ProductState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductAddScreen(navController: NavController) {
-    val viewModel: ProductViewModel = hiltViewModel()
+fun AddProductScreen(
+    productState: ProductState,
+    userId: Int,
+    onAddProduct: (ProductEntity) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var name by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("") }
+    var stock by remember { mutableStateOf("") }
+    var imageUrl by remember { mutableStateOf("") }
 
-    val imageMap = mapOf(
-        // Pasteles clásicos
-        "tortachocolate" to R.drawable.tortachocolate,
-        "tortacumpleanos" to R.drawable.tortacumpleanos,
-        "tortaboda" to R.drawable.tortaboda,
-        "tortamanjar" to R.drawable.tortamanjar,
-        "tortafrutas" to R.drawable.tortafrutas,
-        "tortanaranja" to R.drawable.tortanaranja,
-        "tortavainilla" to R.drawable.tortavainilla,
-        "tortavegana" to R.drawable.tortavegana,
+    var nameError by remember { mutableStateOf<String?>(null) }
+    var descriptionError by remember { mutableStateOf<String?>(null) }
+    var priceError by remember { mutableStateOf<String?>(null) }
+    var stockError by remember { mutableStateOf<String?>(null) }
+    var showErrors by remember { mutableStateOf(false) }
 
-        // Postres especiales
-        "cheesecakesinazucar" to R.drawable.cheesecakesinazucar,
-        "tiramisu" to R.drawable.tiramisu,
-        "tartasantiago" to R.drawable.tartasantiago,
-        "moussechocolate" to R.drawable.moussechocolate,
+    LaunchedEffect(productState.successMessage) {
+        if (productState.successMessage != null) {
+            kotlinx.coroutines.delay(1500)
+            onBack()
+        }
+    }
 
-        // Dietéticos / especiales
-        "browniesingluten" to R.drawable.browniesingluten,
-        "pansingluten" to R.drawable.pansingluten,
-        "galletasveganas" to R.drawable.galletasveganas,
-        "empanadamanzana" to R.drawable.empanadamanzana
-    )
-    val imageKeys = imageMap.keys.toList()
-    var selectedImageIndex by remember { mutableStateOf(0) }
-
-    Scaffold(topBar = { TopAppBar(title = { Text("Añadir Producto") }) }) { padding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Agregar Producto") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            )
+        }
+    ) { paddingValues ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
         ) {
+            AnimatedVisibility(
+                visible = productState.successMessage != null,
+                enter = slideInVertically() + fadeIn(),
+                exit = slideOutVertically() + fadeOut()
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = productState.successMessage ?: "",
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+            }
+
+            AnimatedVisibility(
+                visible = productState.errorMessage != null,
+                enter = slideInVertically() + fadeIn(),
+                exit = slideOutVertically() + fadeOut()
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = productState.errorMessage ?: "",
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                }
+            }
+
             OutlinedTextField(
                 value = name,
-                onValueChange = { name = it },
-                label = { Text("Nombre") },
-                modifier = Modifier.fillMaxWidth()
+                onValueChange = {
+                    name = it
+                    if (showErrors) {
+                        nameError = FormValidation.validateProductName(it)
+                    }
+                },
+                label = { Text("Nombre del producto") },
+                leadingIcon = {
+                    Icon(Icons.Default.ShoppingBag, contentDescription = null)
+                },
+                isError = nameError != null && showErrors,
+                supportingText = {
+                    if (nameError != null && showErrors) {
+                        Text(nameError!!)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
-            OutlinedTextField(
-                value = price,
-                onValueChange = { price = it },
-                label = { Text("Precio (€)") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
-            )
+            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = description,
-                onValueChange = { description = it },
+                onValueChange = {
+                    description = it
+                    if (showErrors) {
+                        descriptionError = FormValidation.validateDescription(it)
+                    }
+                },
                 label = { Text("Descripción") },
+                leadingIcon = {
+                    Icon(Icons.Default.Info, contentDescription = null)
+                },
+                isError = descriptionError != null && showErrors,
+                supportingText = {
+                    if (descriptionError != null && showErrors) {
+                        Text(descriptionError!!)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
-                maxLines = 3
+                minLines = 3,
+                maxLines = 5
             )
 
-            Text("Imagen:")
-            DropdownMenuSample(
-                items = imageKeys,
-                selectedIndex = selectedImageIndex,
-                onSelectionChange = { selectedImageIndex = it }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedTextField(
+                    value = price,
+                    onValueChange = {
+                        price = it
+                        if (showErrors) {
+                            priceError = FormValidation.validatePrice(it)
+                        }
+                    },
+                    label = { Text("Precio") },
+                    leadingIcon = {
+                        Icon(Icons.Default.AccountBox, contentDescription = null)
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    isError = priceError != null && showErrors,
+                    supportingText = {
+                        if (priceError != null && showErrors) {
+                            Text(priceError!!)
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = stock,
+                    onValueChange = {
+                        stock = it
+                        if (showErrors) {
+                            stockError = FormValidation.validateStock(it)
+                        }
+                    },
+                    label = { Text("Stock") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    isError = stockError != null && showErrors,
+                    supportingText = {
+                        if (stockError != null && showErrors) {
+                            Text(stockError!!)
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = imageUrl,
+                onValueChange = { imageUrl = it },
+                label = { Text("URL de imagen (opcional)") },
+                leadingIcon = {
+                    Icon(Icons.Default.Search, contentDescription = null)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
-            Image(
-                painter = painterResource(id = imageMap[imageKeys[selectedImageIndex]]!!),
-                contentDescription = "Preview",
-                modifier = Modifier
-                    .size(120.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {
-                    if (name.isNotBlank() && price.isNotBlank() && description.isNotBlank()) {
-                        val product = Product(
+                    showErrors = true
+                    nameError = FormValidation.validateProductName(name)
+                    descriptionError = FormValidation.validateDescription(description)
+                    priceError = FormValidation.validatePrice(price)
+                    stockError = FormValidation.validateStock(stock)
+
+                    if (nameError == null && descriptionError == null &&
+                        priceError == null && stockError == null) {
+                        val product = ProductEntity(
                             name = name,
-                            price = price.toDoubleOrNull() ?: 0.0,
                             description = description,
-                            imageResId = imageMap[imageKeys[selectedImageIndex]]!!
+                            price = price.toDouble(),
+                            stock = stock.toInt(),
+                            imageUrl = imageUrl,
+                            userId = userId
                         )
-                        viewModel.insert(product)
-                        navController.popBackStack()
+                        onAddProduct(product)
                     }
                 },
-                enabled = name.isNotBlank() && price.isNotBlank() && description.isNotBlank(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                enabled = !productState.isLoading
             ) {
-                Text("Guardar Producto")
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DropdownMenuSample(
-    items: List<String>,
-    selectedIndex: Int,
-    onSelectionChange: (Int) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-    ) {
-        OutlinedTextField(
-            value = items[selectedIndex],
-            onValueChange = {},
-            readOnly = true,
-            label = { Text("Selecciona imagen") },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor()
-        )
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            items.forEachIndexed { index, item ->
-                DropdownMenuItem(
-                    text = { Text(item) },
-                    onClick = {
-                        onSelectionChange(index)
-                        expanded = false
-                    }
-                )
+                if (productState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Icon(Icons.Default.Add, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Agregar Producto")
+                }
             }
         }
     }

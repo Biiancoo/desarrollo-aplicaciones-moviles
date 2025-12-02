@@ -1,17 +1,19 @@
 package com.example.app_pasteleria_mil_sabores.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.app_pasteleria_mil_sabores.data.db.AppDatabase
 import com.example.app_pasteleria_mil_sabores.data.model.Product
 import com.example.app_pasteleria_mil_sabores.data.repository.ProductRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProductViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = ProductRepository(AppDatabase.getDatabase(application).productDao())
+@HiltViewModel
+class ProductViewModel @Inject constructor(
+    private val repository: ProductRepository
+) : ViewModel() {
 
     val products = repository.getAllProducts()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

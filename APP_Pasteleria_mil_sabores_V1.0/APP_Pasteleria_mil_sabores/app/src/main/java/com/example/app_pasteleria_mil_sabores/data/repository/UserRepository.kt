@@ -1,48 +1,53 @@
 package com.example.app_pasteleria_mil_sabores.data.repository
 
-import android.content.Context
-import android.net.NetworkCapabilities
-import android.net.ConnectivityManager
-import com.example.app_pasteleria_mil_sabores.data.api.ApiService
-import com.example.app_pasteleria_mil_sabores.data.db.AppDatabase
-import com.example.app_pasteleria_mil_sabores.data.model.User
+import com.example.ecommerce.data.database.dao.UserDao
+import com.example.ecommerce.data.database.entities.UserEntity
+import kotlinx.coroutines.flow.Flow
 
-class UserRepository(private val context: Context) {
-    private val db = AppDatabase.getDatabase(context)
-    private val userDao = db.userDao()
+class UserRepository(private val userDao: UserDao) {
 
-    suspend fun register(user: User) = userDao.insert(user)
-
-    suspend fun login(email: String, password: String): Result<User> {
-        return if (isNetworkAvailable(context)) { // ✅ Ahora context está disponible
-            try {
-                ApiService.instance.login(
-                    com.example.app_pasteleria_mil_sabores.data.api.LoginRequest.Body(email, password)
+    suspend fun register(email: String, password: String, name: String): Result<Long> {
+        return try {
+            val existingUser = userDao.getUserByEmail(email)
+            if (existingUser != null) {
+                Result.failure(Exception("El email ya está registrado"))
+            } else {
+                val user = UserEntity(
+                    email = email,
+                    password = password,
+                    name = name
                 )
-                val user = User(email, password)
-                userDao.insert(user)
-                Result.success(user)
-            } catch (e: Exception) {
-                tryOfflineLogin(email, password)
+                val userId = userDao.insert(user)
+                Result.success(userId)
             }
-        } else {
-            tryOfflineLogin(email, password)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
-    private suspend fun tryOfflineLogin(email: String, password: String): Result<User> {
-        val user = userDao.getUser(email)
-        return if (user != null && user.password == password) {
-            Result.success(user)
-        } else {
-            Result.failure(IllegalStateException("Credenciales incorrectas"))
+    suspend fun login(email: String, password: String): Result<UserEntity> {
+        return try {
+            val user = userDao.login(email, password)
+            if (user != null) {
+                Result.success(user)
+            } else {
+                Result.failure(Exception("Email o contraseña incorrectos"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
-    private fun isNetworkAvailable(context: Context): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork ?: return false
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-        return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    fun getUserById(userId: Int): Flow<UserEntity?> {
+        return userDao.getUserById(userId)
+    }
+
+    suspend fun updateUser(user: UserEntity): Result<Unit> {
+        return try {
+            userDao.update(user)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

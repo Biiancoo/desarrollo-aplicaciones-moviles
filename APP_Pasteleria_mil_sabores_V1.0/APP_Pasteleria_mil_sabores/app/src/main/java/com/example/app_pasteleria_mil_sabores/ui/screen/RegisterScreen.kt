@@ -14,20 +14,30 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.app_pasteleria_mil_sabores.viewmodel.RegisterUiState
 import com.example.app_pasteleria_mil_sabores.viewmodel.RegisterViewModel
 
 @Composable
 fun RegisterScreen(navController: NavController) {
+
     val viewModel: RegisterViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
+
+    // Campos
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    // Validación simple
+    val isValid = name.isNotBlank() &&
+            email.isNotBlank() &&
+            password.length >= 4
+
+    // Éxito → redirección segura
     LaunchedEffect(uiState.success) {
         if (uiState.success) {
-            navController.navigate("login") { popUpTo("register") { inclusive = true } }
+            navController.navigate("login") {
+                popUpTo("register") { inclusive = true }
+            }
         }
     }
 
@@ -36,61 +46,77 @@ fun RegisterScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
+                .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text("Crear cuenta", style = MaterialTheme.typography.titleLarge)
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                "Crear cuenta",
+                style = MaterialTheme.typography.headlineSmall
+            )
 
+            Spacer(modifier = Modifier.height(30.dp))
+
+            // Nombre
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Nombre") },
+                label = { Text("Nombre completo") },
+                singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Email
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Email") },
+                singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Password
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Contraseña") },
+                label = { Text("Contraseña (mínimo 4 caracteres)") },
+                singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(26.dp))
 
             Button(
-                onClick = { viewModel.register(email, password, name) },
-                enabled = !uiState.isLoading,
+                onClick = {
+                    if (isValid) {
+                        viewModel.register(email, password, name)
+                    }
+                },
+                enabled = isValid && !uiState.isLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
                         color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(18.dp)
                     )
                 } else {
                     Text("Registrar")
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            TextButton(onClick = { navController.navigate("login") }) {
+            TextButton(
+                onClick = { navController.navigate("login") }
+            ) {
                 Text("¿Ya tienes cuenta? Inicia sesión")
             }
 
@@ -102,7 +128,7 @@ fun RegisterScreen(navController: NavController) {
                 Text(
                     text = uiState.error ?: "",
                     color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 16.dp)
+                    modifier = Modifier.padding(top = 18.dp)
                 )
             }
         }
