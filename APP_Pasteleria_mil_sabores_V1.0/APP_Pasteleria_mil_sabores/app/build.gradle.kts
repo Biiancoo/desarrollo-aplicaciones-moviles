@@ -1,4 +1,5 @@
 plugins {
+    id("com.google.dagger.hilt.android") version "2.49" apply false
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
@@ -50,6 +51,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("androidx.compose.ui:ui-test-junit4:1.9.5")
+    implementation(libs.androidx.preference.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -80,6 +83,9 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    testImplementation ("io.kotest:kotest-runner-junit5:5.8.0")
+    testImplementation ("io.mockk:mockk:1.13.10")
+    androidTestImplementation ("androidx.compose.ui:ui-test-junit4")
 }
 
 // Habilitar JUnit 5 en pruebas unitarias

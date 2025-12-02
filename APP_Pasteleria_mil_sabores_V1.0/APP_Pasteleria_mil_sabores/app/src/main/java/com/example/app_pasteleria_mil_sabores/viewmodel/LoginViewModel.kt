@@ -1,6 +1,7 @@
 package com.example.app_pasteleria_mil_sabores.viewmodel
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.app_pasteleria_mil_sabores.data.repository.UserRepository
@@ -18,6 +19,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState
 
+    private val context: Context = application.applicationContext
+
     private val userRepository = UserRepository(application)
 
     fun login(email: String, password: String) {
@@ -29,8 +32,14 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             userRepository.login(email, password)
-                .onSuccess { _uiState.value = _uiState.value.copy(success = true) }
-                .onFailure { _uiState.value = _uiState.value.copy(error = it.message, isLoading = false) }
+                .onSuccess { user ->
+                    val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+                    prefs.edit().putString("current_user_email", user.email).apply()
+                    _uiState.value = _uiState.value.copy(success = true, isLoading = false)
+                }
+                .onFailure {
+                    _uiState.value = _uiState.value.copy(error = it.message, isLoading = false)
+                }
         }
     }
 }

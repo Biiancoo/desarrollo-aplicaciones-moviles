@@ -1,4 +1,3 @@
-// MainActivity.kt
 package com.example.app_pasteleria_mil_sabores
 
 import android.os.Bundle
@@ -9,8 +8,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import androidx.room.Room
+import com.example.app_pasteleria_mil_sabores.navigation.NavGraph
+import com.example.app_pasteleria_mil_sabores.ui.theme.AppPasteleriaMilSaboresTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            AppPasteleriaMilSaboresTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    val navController = rememberNavController()
+                    NavGraph(navController = navController)
+                }
+            }
+        }
+    }
 }
