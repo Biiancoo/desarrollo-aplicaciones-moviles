@@ -14,8 +14,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.ecommerce.ui.components.FormValidation
-import com.example.ecommerce.ui.viewmodels.AuthState
+import com.example.app_pasteleria_mil_sabores.ui.components.FormValidation
+import com.example.app_pasteleria_mil_sabores.ui.viewmodel.AuthState
 
 @Composable
 fun LoginScreen(

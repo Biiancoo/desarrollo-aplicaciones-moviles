@@ -1,7 +1,7 @@
 package com.example.app_pasteleria_mil_sabores.data.repository
 
-import com.example.ecommerce.data.database.dao.UserDao
-import com.example.ecommerce.data.database.entities.UserEntity
+import com.example.app_pasteleria_mil_sabores.data.dao.UserDao
+import com.example.app_pasteleria_mil_sabores.entities.UserEntity
 import kotlinx.coroutines.flow.Flow
 
 class UserRepository(private val userDao: UserDao) {

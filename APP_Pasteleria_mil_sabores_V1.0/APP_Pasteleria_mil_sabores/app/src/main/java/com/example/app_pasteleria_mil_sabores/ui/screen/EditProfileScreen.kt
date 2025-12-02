@@ -15,9 +15,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.app_pasteleria_mil_sabores.data.entities.UserEntity
 import com.example.app_pasteleria_mil_sabores.viewmodel.ProfileUiState
-import com.example.ecommerce.data.database.entities.UserEntity
 import com.example.ecommerce.ui.components.FormValidation
-import com.example.ecommerce.ui.viewmodels.ProfileState
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)

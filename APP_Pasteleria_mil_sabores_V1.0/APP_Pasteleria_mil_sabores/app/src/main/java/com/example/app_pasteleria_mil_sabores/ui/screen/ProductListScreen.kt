@@ -11,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.ecommerce.data.database.entities.ProductEntity
-import com.example.ecommerce.ui.viewmodels.ProductState
+import com.example.app_pasteleria_mil_sabores.data.entities.ProductEntity
+import com.example.app_pasteleria_mil_sabores.ui.viewmodel.ProductState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
