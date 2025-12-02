@@ -35,13 +35,14 @@ fun RegisterScreen(navController: NavController) {
             password.length >= 4
 
     // Éxito → redirección segura
-    LaunchedEffect(uiState.success) {
+    LaunchedEffect(key1 = uiState.success) {
         if (uiState.success) {
             navController.navigate("login") {
                 popUpTo("register") { inclusive = true }
             }
         }
     }
+
 
     Scaffold { padding ->
         Column(
