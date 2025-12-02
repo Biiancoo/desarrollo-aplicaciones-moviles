@@ -6,13 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import com.example.ecommerce.data.api.ApiService
-import com.example.ecommerce.data.database.AppDatabase
+import com.example.app_pasteleria_mil_sabores.data.db.AppDatabase
 import com.example.ecommerce.data.repository.CartRepository
 import com.example.ecommerce.data.repository.ProductRepository
 import com.example.ecommerce.data.repository.UserRepository
-import com.example.ecommerce.navigation.Navigation
+import com.example.app_pasteleria_mil_sabores.navigation.Navigation
 import com.example.ecommerce.ui.viewmodels.AuthViewModel
-import com.example.ecommerce.ui.viewmodels.CartViewModel
+import com.example.app_pasteleria_mil_sabores.viewmodel.CartViewModel
 import com.example.ecommerce.ui.viewmodels.ProductViewModel
 import com.example.ecommerce.ui.viewmodels.ProfileViewModel
 

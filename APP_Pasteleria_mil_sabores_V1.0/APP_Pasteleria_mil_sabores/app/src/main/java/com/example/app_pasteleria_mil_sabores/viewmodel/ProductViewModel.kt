@@ -2,7 +2,7 @@ package com.example.app_pasteleria_mil_sabores.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.app_pasteleria_mil_sabores.data.model.Product
+import com.example.app_pasteleria_mil_sabores.model.Product
 import com.example.app_pasteleria_mil_sabores.data.repository.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted

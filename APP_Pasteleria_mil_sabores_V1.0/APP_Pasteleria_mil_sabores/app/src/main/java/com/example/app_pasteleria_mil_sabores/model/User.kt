@@ -1,4 +1,4 @@
-package com.example.app_pasteleria_mil_sabores.data.model
+package com.example.app_pasteleria_mil_sabores.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

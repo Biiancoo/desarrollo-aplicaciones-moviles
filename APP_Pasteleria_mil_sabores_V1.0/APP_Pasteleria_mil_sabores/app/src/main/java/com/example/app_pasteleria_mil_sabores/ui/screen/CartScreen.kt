@@ -12,8 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.app_pasteleria_mil_sabores.data.entities.CartItemEntity
 // Asegúrate de que estos imports coincidan con tu paquete real
-import com.example.app_pasteleria_mil_sabores.ui.viewmodels.CartState
-import com.example.app_pasteleria_mil_sabores.data.database.entities.CartItemEntity
+import com.example.app_pasteleria_mil_sabores.viewmodel.CartState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

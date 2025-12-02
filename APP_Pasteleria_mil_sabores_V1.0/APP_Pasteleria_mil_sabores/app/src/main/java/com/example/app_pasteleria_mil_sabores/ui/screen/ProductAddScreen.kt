@@ -1,4 +1,4 @@
-package com.example.ecommerce.ui.screens
+package com.example.app_pasteleria_mil_sabores.ui.screen
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.example.ecommerce.data.database.entities.ProductEntity
 import com.example.ecommerce.ui.components.FormValidation
 import com.example.ecommerce.ui.viewmodels.ProductState
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +41,7 @@ fun AddProductScreen(
 
     LaunchedEffect(productState.successMessage) {
         if (productState.successMessage != null) {
-            kotlinx.coroutines.delay(1500)
+            delay(1500)
             onBack()
         }
     }

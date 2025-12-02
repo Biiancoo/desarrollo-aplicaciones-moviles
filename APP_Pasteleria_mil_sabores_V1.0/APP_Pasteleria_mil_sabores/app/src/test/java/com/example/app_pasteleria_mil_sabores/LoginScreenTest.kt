@@ -2,6 +2,7 @@ package com.example.ecommerce.ui.screens
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import com.example.app_pasteleria_mil_sabores.ui.screen.LoginScreen
 import com.example.ecommerce.ui.viewmodels.AuthState
 import org.junit.Rule
 import org.junit.Test

@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.app_pasteleria_mil_sabores.data.entities.UserEntity
-import com.example.ecommerce.data.database.AppDatabase
+import com.example.app_pasteleria_mil_sabores.data.db.AppDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

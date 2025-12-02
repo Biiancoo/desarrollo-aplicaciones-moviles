@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.app_pasteleria_mil_sabores.data.model.Product
+import com.example.app_pasteleria_mil_sabores.model.Product
 import com.example.app_pasteleria_mil_sabores.viewmodel.ProductViewModel
 
 @Composable

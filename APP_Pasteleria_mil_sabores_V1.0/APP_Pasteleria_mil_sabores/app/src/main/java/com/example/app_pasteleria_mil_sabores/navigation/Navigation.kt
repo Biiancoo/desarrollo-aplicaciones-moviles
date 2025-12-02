@@ -1,4 +1,4 @@
-package com.example.ecommerce.navigation
+package com.example.app_pasteleria_mil_sabores.navigation
 
 import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
@@ -7,8 +7,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.app_pasteleria_mil_sabores.ui.screen.AddProductScreen
 import com.example.app_pasteleria_mil_sabores.ui.screen.CartScreen
+import com.example.app_pasteleria_mil_sabores.ui.screen.EditProductScreen
 import com.example.app_pasteleria_mil_sabores.ui.screen.EditProfileScreen
+import com.example.app_pasteleria_mil_sabores.ui.screen.LoginScreen
+import com.example.app_pasteleria_mil_sabores.ui.screen.ProductListScreen
+import com.example.app_pasteleria_mil_sabores.ui.screen.ProfileScreen
+import com.example.app_pasteleria_mil_sabores.viewmodel.CartViewModel
 import com.example.ecommerce.ui.screens.*
 import com.example.ecommerce.ui.viewmodels.*
 

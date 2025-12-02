@@ -1,4 +1,4 @@
-package com.example.ecommerce.ui.screens
+package com.example.app_pasteleria_mil_sabores.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
