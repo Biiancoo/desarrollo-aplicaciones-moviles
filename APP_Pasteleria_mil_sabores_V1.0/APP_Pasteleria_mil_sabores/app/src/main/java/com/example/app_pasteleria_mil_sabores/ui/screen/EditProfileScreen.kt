@@ -1,4 +1,4 @@
-package com.example.ecommerce.ui.screens
+package com.example.app_pasteleria_mil_sabores.ui.screen
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
@@ -13,14 +13,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.app_pasteleria_mil_sabores.data.entities.UserEntity
+import com.example.app_pasteleria_mil_sabores.viewmodel.ProfileUiState
 import com.example.ecommerce.data.database.entities.UserEntity
 import com.example.ecommerce.ui.components.FormValidation
 import com.example.ecommerce.ui.viewmodels.ProfileState
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfileScreen(
-    profileState: ProfileState,
+    profileState: ProfileUiState,
     onUpdateProfile: (UserEntity) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -43,7 +46,7 @@ fun EditProfileScreen(
 
     LaunchedEffect(profileState.successMessage) {
         if (profileState.successMessage != null) {
-            kotlinx.coroutines.delay(1500)
+            delay(1500)
             onBack()
         }
     }

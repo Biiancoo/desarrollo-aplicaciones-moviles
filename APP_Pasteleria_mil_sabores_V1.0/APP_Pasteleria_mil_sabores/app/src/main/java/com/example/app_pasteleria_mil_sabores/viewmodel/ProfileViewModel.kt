@@ -3,8 +3,8 @@ package com.example.app_pasteleria_mil_sabores.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.app_pasteleria_mil_sabores.data.db.AppDatabase
 import com.example.app_pasteleria_mil_sabores.data.model.User
+import com.example.ecommerce.data.database.AppDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
