@@ -13,7 +13,5 @@ data class Product(
     val price: Double,
 
     val description: String,
-
-    // Guarda nombre del recurso en vez del ID para evitar crashes al reinstalar la app
     val imagePath: String = ""
 )

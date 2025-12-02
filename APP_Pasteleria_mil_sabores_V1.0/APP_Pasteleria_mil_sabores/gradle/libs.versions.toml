@@ -19,6 +19,7 @@ kotest = "5.8.0"
 mockk = "1.13.10"
 preferenceKtx = "1.2.1"
 hilt = "2.48"
+engageCore = "1.5.10"
 
 [libraries]
 # Core
@@ -72,6 +73,7 @@ androidx-preference-ktx = { group = "androidx.preference", name = "preference-kt
 # Hilt
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+engage-core = { group = "com.google.android.engage", name = "engage-core", version.ref = "engageCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

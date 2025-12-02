@@ -5,16 +5,20 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.app_pasteleria_mil_sabores.data.dao.CartDao
+import com.example.app_pasteleria_mil_sabores.data.dao.ProductDao
 import com.example.app_pasteleria_mil_sabores.data.dao.UserDao
 import com.example.app_pasteleria_mil_sabores.data.entities.CartItemEntity
 import com.example.app_pasteleria_mil_sabores.data.entities.UserEntity
+import com.example.app_pasteleria_mil_sabores.data.entities.ProductEntity
 
 
 @Database(
-    entities = [UserEntity::class, ProductEntity::class, CartItemEntity::class],
+
+    entities = [ ProductEntity::class, UserEntity::class,CartItemEntity::class],
     version = 1,
     exportSchema = false
 )
+
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun productDao(): ProductDao
