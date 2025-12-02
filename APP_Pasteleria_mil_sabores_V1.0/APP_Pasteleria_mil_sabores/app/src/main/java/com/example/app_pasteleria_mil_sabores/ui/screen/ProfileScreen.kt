@@ -10,8 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.app_pasteleria_mil_sabores.ui.viewmodel.ProfileState
-
+import com.example.app_pasteleria_mil_sabores.viewmodel.ProfileState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(

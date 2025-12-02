@@ -14,13 +14,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.app_pasteleria_mil_sabores.viewmodel.RegisterViewModel
+import com.example.app_pasteleria_mil_sabores.viewmodel.AuthState
+import com.example.app_pasteleria_mil_sabores.viewmodel.AuthViewModel
+
 
 @Composable
 fun RegisterScreen(navController: NavController) {
 
-    val viewModel: RegisterViewModel = viewModel()
-    val uiState by viewModel.uiState.collectAsState()
+    val viewModel: AuthViewModel = viewModel()
+    val uiState by viewModel.authState.collectAsState()
 
     // Campos
     var name by remember { mutableStateOf("") }
