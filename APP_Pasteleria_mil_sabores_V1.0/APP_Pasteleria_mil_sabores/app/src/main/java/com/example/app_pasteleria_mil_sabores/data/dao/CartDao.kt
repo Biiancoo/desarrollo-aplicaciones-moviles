@@ -1,7 +1,7 @@
 package com.example.app_pasteleria_mil_sabores.data.dao
 
 import androidx.room.*
-import com.example.ecommerce.data.database.entities.CartItemEntity
+import com.example.app_pasteleria_mil_sabores.data.entities.CartItemEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

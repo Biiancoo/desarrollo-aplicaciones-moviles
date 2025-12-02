@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.app_pasteleria_mil_sabores.ui.screen.CartScreen
 import com.example.app_pasteleria_mil_sabores.ui.screen.EditProfileScreen
 import com.example.ecommerce.ui.screens.*
 import com.example.ecommerce.ui.viewmodels.*

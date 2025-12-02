@@ -1,7 +1,7 @@
 package com.example.app_pasteleria_mil_sabores.data.repository
 
-import com.example.ecommerce.data.database.dao.CartDao
-import com.example.ecommerce.data.database.entities.CartItemEntity
+import com.example.app_pasteleria_mil_sabores.data.dao.CartDao
+import com.example.app_pasteleria_mil_sabores.data.entities.CartItemEntity
 import kotlinx.coroutines.flow.Flow
 
 class CartRepository(private val cartDao: CartDao) {
