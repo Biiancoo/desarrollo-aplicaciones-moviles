@@ -12,37 +12,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-// Importante: Usar hiltViewModel para que funcione la inyección del repositorio
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.app_pasteleria_mil_sabores.viewmodel.AuthState
 import com.example.app_pasteleria_mil_sabores.viewmodel.AuthViewModel
 
+
 @Composable
-fun RegisterScreen(
-    navController: NavController,
-    // Inyectamos el ViewModel automáticamente con Hilt
-    viewModel: AuthViewModel = hiltViewModel()
-) {
+fun RegisterScreen(navController: NavController) {
+
+    val viewModel: AuthViewModel = viewModel()
     val uiState by viewModel.authState.collectAsState()
 
-    // Campos del formulario
+    // Campos
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    // Validación simple local
+    // Validación simple
     val isValid = name.isNotBlank() &&
             email.isNotBlank() &&
             password.length >= 4
 
-    // Efecto para manejar el éxito del registro
-    LaunchedEffect(uiState.successMessage) {
-        if (uiState.successMessage != null) {
-            // Esperar un momento para que el usuario vea el mensaje (opcional) o navegar directo
+    // Éxito → redirección segura
+    LaunchedEffect(uiState.success) {
+        if (uiState.success) {
             navController.navigate("login") {
                 popUpTo("register") { inclusive = true }
             }
-            viewModel.clearMessages() // Limpiar estado para la próxima vez
         }
     }
 
@@ -57,14 +54,13 @@ fun RegisterScreen(
         ) {
 
             Text(
-                text = "Crear cuenta",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary
+                "Crear cuenta",
+                style = MaterialTheme.typography.headlineSmall
             )
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            // Campo Nombre
+            // Nombre
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
@@ -75,11 +71,11 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo Email
+            // Email
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Correo electrónico") },
+                label = { Text("Email") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth()
@@ -87,20 +83,18 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo Contraseña
+            // Password
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Contraseña (mínimo 4 caracteres)") },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(26.dp))
 
-            // Botón de Registro
             Button(
                 onClick = {
                     if (isValid) {
@@ -108,43 +102,35 @@ fun RegisterScreen(
                     }
                 },
                 enabled = isValid && !uiState.isLoading,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
                         color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(18.dp)
                     )
                 } else {
-                    Text("Registrarme")
+                    Text("Registrar")
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            // Botón ir a Login
             TextButton(
-                onClick = {
-                    viewModel.clearMessages()
-                    navController.navigate("login")
-                }
+                onClick = { navController.navigate("login") }
             ) {
                 Text("¿Ya tienes cuenta? Inicia sesión")
             }
 
-            // Mensajes de Error
             AnimatedVisibility(
-                visible = uiState.errorMessage != null,
+                visible = uiState.error != null,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
                 Text(
-                    text = uiState.errorMessage ?: "",
+                    text = uiState.error ?: "",
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 16.dp)
+                    modifier = Modifier.padding(top = 18.dp)
                 )
             }
         }
