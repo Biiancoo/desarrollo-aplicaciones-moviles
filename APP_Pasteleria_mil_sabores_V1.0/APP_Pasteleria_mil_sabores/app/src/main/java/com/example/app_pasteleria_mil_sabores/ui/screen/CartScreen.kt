@@ -1,130 +1,157 @@
 package com.example.app_pasteleria_mil_sabores.ui.screen
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.example.app_pasteleria_mil_sabores.data.entities.CartItemEntity
-// Asegúrate de que estos imports coincidan con tu paquete real
-import com.example.app_pasteleria_mil_sabores.viewmodel.CartState
+import com.example.app_pasteleria_mil_sabores.data.entities.UserEntity
+import com.example.app_pasteleria_mil_sabores.viewmodel.ProfileUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartScreen(
-    cartState: CartState,
-    onUpdateQuantity: (CartItemEntity, Int) -> Unit,
-    onRemoveItem: (CartItemEntity) -> Unit,
-    onClearCart: () -> Unit,
+    profileState: ProfileUiState,
+    onUpdateProfile: (UserEntity) -> Unit,
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier // Añadido modifier como parámetro
 ) {
+    // Inicializar estados: Si el usuario cambia, reiniciamos los campos
+    var name by remember(profileState.user) { mutableStateOf(profileState.user?.name ?: "") }
+    var phone by remember(profileState.user) { mutableStateOf(profileState.user?.phone ?: "") }
+    var address by remember(profileState.user) { mutableStateOf(profileState.user?.address ?: "") }
+
+    // Estados de error para validación
+    var nameError by remember { mutableStateOf<String?>(null) }
+    var phoneError by remember { mutableStateOf<String?>(null) }
+    var showErrors by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Mi Carrito") },
+                title = { Text("Editar Perfil") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                     }
                 },
-                actions = {
-                    if (cartState.cartItems.isNotEmpty()) {
-                        IconButton(onClick = onClearCart) {
-                            Icon(Icons.Default.Delete, contentDescription = "Vaciar", tint = MaterialTheme.colorScheme.error)
-                        }
-                    }
-                }
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             )
-        },
-        bottomBar = {
-            if (cartState.cartItems.isNotEmpty()) {
-                Surface(shadowElevation = 8.dp) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text("Total:", style = MaterialTheme.typography.titleLarge)
-                            Text(
-                                text = "$${cartState.totalAmount}",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = { /* Lógica de pago */ }, modifier = Modifier.fillMaxWidth()) {
-                            Text("Pagar Ahora")
-                        }
-                    }
-                }
-            }
         }
     ) { paddingValues ->
-        if (cartState.cartItems.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
-                Text("Tu carrito está vacío", style = MaterialTheme.typography.titleMedium)
-            }
-        } else {
-            LazyColumn(
-                modifier = modifier.fillMaxSize().padding(paddingValues),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(cartState.cartItems) { item ->
-                    CartItemCardSimple(
-                        item = item,
-                        onIncrease = { onUpdateQuantity(item, item.quantity + 1) },
-                        onDecrease = { onUpdateQuantity(item, item.quantity - 1) },
-                        onRemove = { onRemoveItem(item) }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun CartItemCardSimple(
-    item: CartItemEntity,
-    onIncrease: () -> Unit,
-    onDecrease: () -> Unit,
-    onRemove: () -> Unit
-) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.padding(12.dp).fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Columna de Información (Izquierda)
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = item.productName, style = MaterialTheme.typography.titleMedium)
-                Text(text = "$${item.productPrice}", color = MaterialTheme.colorScheme.secondary)
-                Text(text = "Subtotal: $${item.productPrice * item.quantity}", style = MaterialTheme.typography.bodySmall)
-            }
+            // Icono de perfil grande
+            Icon(
+                imageVector = Icons.Default.AccountCircle,
+                contentDescription = null,
+                modifier = Modifier.size(100.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
 
-            // Columna de Controles (Derecha)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onDecrease) {
-                    Icon(Icons.Default.Remove, contentDescription = "Menos") // Cambié Delete por Remove (-)
-                }
-                Text(
-                    text = item.quantity.toString(),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 4.dp)
-                )
-                IconButton(onClick = onIncrease) {
-                    Icon(Icons.Default.Add, contentDescription = "Más")
-                }
-                IconButton(onClick = onRemove) {
-                    Icon(Icons.Default.Close, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error)
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Campo Nombre
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Nombre Completo") },
+                leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+                isError = nameError != null && showErrors,
+                supportingText = {
+                    if (nameError != null && showErrors) {
+                        Text(nameError!!)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Campo Teléfono
+            OutlinedTextField(
+                value = phone,
+                onValueChange = { phone = it },
+                label = { Text("Teléfono") },
+                leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                isError = phoneError != null && showErrors,
+                supportingText = {
+                    if (phoneError != null && showErrors) {
+                        Text(phoneError!!)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Campo Dirección
+            OutlinedTextField(
+                value = address,
+                onValueChange = { address = it },
+                label = { Text("Dirección") },
+                leadingIcon = { Icon(Icons.Default.Home, contentDescription = null) },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 2,
+                maxLines = 3
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Botón Guardar Cambios
+            Button(
+                onClick = {
+                    showErrors = true
+
+                    // Validación simple interna
+                    nameError = if (name.isBlank()) "El nombre es obligatorio" else null
+                    phoneError = if (phone.isNotEmpty() && phone.length < 8) "Teléfono inválido" else null
+
+                    if (nameError == null && phoneError == null) {
+                        profileState.user?.let { user ->
+                            onUpdateProfile(
+                                user.copy(
+                                    name = name,
+                                    phone = phone,
+                                    address = address
+                                )
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                enabled = !profileState.isLoading
+            ) {
+                if (profileState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Icon(Icons.Default.Check, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Guardar Cambios")
                 }
             }
         }

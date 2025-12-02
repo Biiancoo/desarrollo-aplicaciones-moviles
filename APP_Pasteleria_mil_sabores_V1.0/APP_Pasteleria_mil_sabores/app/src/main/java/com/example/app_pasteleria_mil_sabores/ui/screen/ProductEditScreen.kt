@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.example.app_pasteleria_mil_sabores.data.entities.ProductEntity
 import com.example.app_pasteleria_mil_sabores.ui.components.FormValidation
 import com.example.app_pasteleria_mil_sabores.ui.viewmodel.ProductState
+import com.example.app_pasteleria_mil_sabores.viewmodel.ProductState
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
