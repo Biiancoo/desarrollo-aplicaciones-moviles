@@ -7,24 +7,22 @@ import com.example.app_pasteleria_mil_sabores.data.api.ApiService
 import com.example.app_pasteleria_mil_sabores.data.db.AppDatabase
 import com.example.app_pasteleria_mil_sabores.data.model.User
 
-class UserRepository(context: Context) {
+class UserRepository(private val context: Context) {
     private val db = AppDatabase.getDatabase(context)
     private val userDao = db.userDao()
 
     suspend fun register(user: User) = userDao.insert(user)
 
     suspend fun login(email: String, password: String): Result<User> {
-        return if (isNetworkAvailable(context)) {
+        return if (isNetworkAvailable(context)) { // ✅ Ahora context está disponible
             try {
                 ApiService.instance.login(
                     com.example.app_pasteleria_mil_sabores.data.api.LoginRequest.Body(email, password)
                 )
-                // Si la API responde, guardar usuario local
                 val user = User(email, password)
                 userDao.insert(user)
                 Result.success(user)
             } catch (e: Exception) {
-                // Fallback a offline
                 tryOfflineLogin(email, password)
             }
         } else {

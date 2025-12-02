@@ -1,5 +1,6 @@
 package com.example.app_pasteleria_mil_sabores.ui.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -16,6 +17,7 @@ import com.example.app_pasteleria_mil_sabores.R
 import com.example.app_pasteleria_mil_sabores.data.model.Product
 import com.example.app_pasteleria_mil_sabores.viewmodel.ProductViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductAddScreen(navController: NavController) {
     val viewModel: ProductViewModel = hiltViewModel()
@@ -24,18 +26,27 @@ fun ProductAddScreen(navController: NavController) {
     var description by remember { mutableStateOf("") }
 
     val imageMap = mapOf(
+        // Pasteles clásicos
         "tortachocolate" to R.drawable.tortachocolate,
-        "browniesingluten" to R.drawable.browniesingluten,
-        "cheesecakesinzucar" to R.drawable.cheesecakesinzucar,
-        "empanadamanzana" to R.drawable.empanadamanzana,
-        "galletasveganas" to R.drawable.galletasveganas,
-        "moussecocolate" to R.drawable.moussecocolate,
-        "pansingluten" to R.drawable.pansingluten,
-        "tartasantiago" to R.drawable.tartasantiago,
-        "tiramisu" to R.drawable.tiramisu,
+        "tortacumpleanos" to R.drawable.tortacumpleanos,
         "tortaboda" to R.drawable.tortaboda,
-        "tortachocolate" to R.drawable.tortachocolate,
-        "tortacumpleanos" to R.drawable.tortacumpleanos
+        "tortamanjar" to R.drawable.tortamanjar,
+        "tortafrutas" to R.drawable.tortafrutas,
+        "tortanaranja" to R.drawable.tortanaranja,
+        "tortavainilla" to R.drawable.tortavainilla,
+        "tortavegana" to R.drawable.tortavegana,
+
+        // Postres especiales
+        "cheesecakesinazucar" to R.drawable.cheesecakesinazucar,
+        "tiramisu" to R.drawable.tiramisu,
+        "tartasantiago" to R.drawable.tartasantiago,
+        "moussechocolate" to R.drawable.moussechocolate,
+
+        // Dietéticos / especiales
+        "browniesingluten" to R.drawable.browniesingluten,
+        "pansingluten" to R.drawable.pansingluten,
+        "galletasveganas" to R.drawable.galletasveganas,
+        "empanadamanzana" to R.drawable.empanadamanzana
     )
     val imageKeys = imageMap.keys.toList()
     var selectedImageIndex by remember { mutableStateOf(0) }
@@ -108,6 +119,7 @@ fun ProductAddScreen(navController: NavController) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DropdownMenuSample(
     items: List<String>,

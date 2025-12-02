@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 import com.example.app_pasteleria_mil_sabores.R
 import com.example.app_pasteleria_mil_sabores.viewmodel.ProfileViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController) {
     val context = LocalContext.current

@@ -1,5 +1,6 @@
 package com.example.app_pasteleria_mil_sabores.ui.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,6 +10,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -17,7 +19,10 @@ import androidx.navigation.NavController
 import com.example.app_pasteleria_mil_sabores.R
 import com.example.app_pasteleria_mil_sabores.viewmodel.CartViewModel
 import com.example.app_pasteleria_mil_sabores.viewmodel.ProductViewModel
+import androidx.compose.material.icons.filled.ShoppingCart
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductListScreen(navController: NavController) {
     val productViewModel: ProductViewModel = hiltViewModel()
@@ -86,7 +91,7 @@ fun ProductCard(
                 Icon(Icons.Default.Edit, contentDescription = "Editar")
             }
             IconButton(onClick = onAddToCart) {
-                Icon(Icons.Default.AddShoppingCart, contentDescription = "Añadir al carrito")
+                Icon(Icons.Filled.ShoppingCart, contentDescription = "Añadir al carrito")
             }
         }
     }

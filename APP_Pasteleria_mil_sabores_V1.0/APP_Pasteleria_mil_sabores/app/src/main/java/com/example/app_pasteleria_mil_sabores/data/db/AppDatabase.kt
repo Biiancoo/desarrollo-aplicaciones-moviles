@@ -1,12 +1,13 @@
 package com.example.app_pasteleria_mil_sabores.data.db
 
-import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.app_pasteleria_mil_sabores.data.dao.UserDao // ✅ import correcto
 import com.example.app_pasteleria_mil_sabores.data.dao.ProductDao
 import com.example.app_pasteleria_mil_sabores.data.model.Product
 import com.example.app_pasteleria_mil_sabores.data.model.User
+import android.content.Context
 
 @Database(
     entities = [Product::class, User::class],
@@ -15,7 +16,7 @@ import com.example.app_pasteleria_mil_sabores.data.model.User
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun productDao(): ProductDao
-    abstract fun userDao(): UserDao
+    abstract fun userDao(): UserDao // ✅ ahora apunta a la interfaz en `dao`
 
     companion object {
         @Volatile
@@ -33,10 +34,4 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
     }
-}
-
-// UserDao.kt (añadido aquí por simplicidad, aunque ideal en dao/)
-abstract class UserDao {
-    abstract suspend fun insert(user: User)
-    abstract suspend fun getUser(email: String): User?
 }

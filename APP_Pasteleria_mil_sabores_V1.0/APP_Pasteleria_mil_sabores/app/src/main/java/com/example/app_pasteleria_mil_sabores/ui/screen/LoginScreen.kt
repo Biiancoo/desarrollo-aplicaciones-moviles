@@ -1,4 +1,5 @@
 package com.example.app_pasteleria_mil_sabores.ui.screen
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -9,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -70,7 +72,9 @@ fun LoginScreen(navController: NavController) {
             Button(
                 onClick = { viewModel.login(email, password) },
                 enabled = !uiState.isLoading,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("LoginButton") // ✅ Etiqueta de prueba añadida
             ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
